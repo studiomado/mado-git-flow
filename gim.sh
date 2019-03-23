@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
+usage() {
     echo "        feature: crea un branch feature"
     echo "        hotfix: crea un branch di hotfix"
     echo "        bugfix: crea un branch di bugfix"
@@ -12,6 +12,9 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
     echo "        deleteRemoteBranch: tool pulizia branch remoti"
     echo "        deleteLocalBranch: tool pulizia branch locali"
     exit
+}
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
+    usage
 fi
 actualBranch=$(git branch | grep \* | cut -d ' ' -f2)
 actualBranchType=$(git branch | grep \* | cut -d ' ' -f2 | cut -d '/' -f1)
@@ -52,23 +55,9 @@ do
     prev="$var"
 done
 # create feature or hotfix branch
-if [[ "$1" == "feature" ]] || [[ "$1" == "bugfix" ]]
-then
-    if [[ "$consoleTaskId" == "0" ]]; then
-        printf "task id: "
-        read -r taskId
-        printf "nome $1: "
-        read -r name
-        newName="${name// /-}"
-    else
-        taskId="$consoleTaskId"
-    fi
-    if [[ "$taskId" != "" ]]; then
-        branchName="#$taskId-$newName"
-    else
-        branchName="$newName"
-    fi
-    git flow "$1" start "$branchName"
+if [[ "$1" == "feature" ]] || [[ "$1" == "bugfix" ]]; then
+    newBranch=$(gim-get-granch-name "$consoleTaskId")
+    git flow "$1" start "$newBranch"
 fi
 
 if [[ "$1" == "hotfix" ]]
@@ -94,64 +83,16 @@ if [[ "$1" == "delete" ]]; then
 fi
 
 # menage commit
-if [[ "$1" == "commit" ]]
-then
-        start="fix"
-        if [[ "$actualBranchType" == "feature" ]]; then
-            start="feat"
-        elif [[ "$actualBranchType" == "release" ]]; then
-            start="release"
-        fi
-        printf "tipo di commit attuale: $start, mantenere?[Y/n] "
-        read -r accept
-        if [[ "$accept" == "n" ]]; then
-            printf "specifica tipo di commit: "
-            read -r start
-        fi
-        printf "task: "
-        read -r taskId
-        task=""
-        if [[ ! -z "$taskId" ]]; then
-            task="(#$taskId)"
-        fi
-        printf "ambito $actualBranchType (1 parola): "
-        read -r zone
-        title="${branchName//-/ }"
-        echo "descrizione $actualBranchType:"
-        read -r description
-        git add -A
-        git commit -m "$start($zone): $title $task" -m "$description"
+if [[ "$1" == "commit" ]]; then
+    gim-commit "$actualBranchType" "$branchName"
 fi
 
 # menage delete remote branch
-if [[ "$1" == "deleteRemoteBranch" ]]
-then
-    list=($(git branch -r))
-    for branch in "${list[@]}"; do
-        echo "delete $branch? [y/N]"
-        read -r canBeDeleted
-        if [[ "$canBeDeleted" == "y" ]]; then
-            branchToDelete="${branch//origin\//}"
-            git push -d origin "$branchToDelete"
-            echo "$branchToDelete deleted"
-            echo ""
-            echo ""
-        fi
-    done
+if [[ "$1" == "deleteRemoteBranch" ]]; then
+    gim-delete-remote-branch
 fi
 
 # menage delete local branch
-if [[ "$1" == "deleteLocalBranch" ]]
-then
-    list=($(git branch | grep -v '*'))
-    for branch in "${list[@]}"; do
-        echo "delete $branch? [y/N]"
-        read -r canBeDeleted
-        if [[ "$canBeDeleted" == "y" ]]; then
-            git branch -D "$branch"
-            echo "$branch deleted"
-            echo ""
-            echo ""
-        fi
-    done
+if [[ "$1" == "deleteLocalBranch" ]]; then
+    delete-local-branch
 fi

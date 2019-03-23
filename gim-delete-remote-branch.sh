@@ -1,0 +1,13 @@
+#!/bin/bash
+list=($(git branch -r))
+for branch in "${list[@]}"; do
+    echo "delete $branch? [y/N]"
+    read -r canBeDeleted
+    if [[ "$canBeDeleted" == "y" ]]; then
+        branchToDelete="${branch//origin\//}"
+        git push -d origin "$branchToDelete"
+        echo "$branchToDelete deleted"
+        echo ""
+        echo ""
+    fi
+done
