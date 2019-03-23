@@ -1,5 +1,5 @@
 #!/bin/bash
-list=($(git branch -r))
+list=("$(git branch -r)")
 for branch in "${list[@]}"; do
     echo "delete $branch? [y/N]"
     read -r canBeDeleted

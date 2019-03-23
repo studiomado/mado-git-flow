@@ -17,10 +17,10 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
     usage
 fi
 
-major=$(git describe --tags `git rev-list --tags --max-count=1` | cut -d '.' -f1)
+major=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f1)
 major="${major//v/}"
-minor=$(git describe --tags `git rev-list --tags --max-count=1` | cut -d '.' -f2)
-patch=$(git describe --tags `git rev-list --tags --max-count=1` | cut -d '.' -f3)
+minor=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f2)
+patch=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f3)
 
 if [[ -z "$major" ]]; then
     major=1
@@ -59,12 +59,12 @@ fi
 
 if [[ "$1" == "hotfix" ]]
 then
-    git flow "$1" start "v$major"."$minor"."$((patch + 1))"
+    git flow "$1" start "v$major.$minor.$((patch + 1))"
 fi
 
 if [[ "$1" == "release" ]]
 then
-    releaseName="v$major"."$((minor +1))".0
+    releaseName="v$major.$((minor +1))".0
     if [[ "$releaseMajor" == "1" ]]; then
         releaseName="v$((major + 1))".0.0
     fi
@@ -72,7 +72,7 @@ then
 fi
 
 if [[ "$1" == "finish" ]] || [[ "$1" == "publish" ]]; then
-    git flow $(get-actual-branch-type) "$1" $(get-actual-branch-name)
+    git flow "$(get-actual-branch-type)" "$1" "$(get-actual-branch-name)"
 fi
 
 if [[ "$1" == "delete" ]]; then
