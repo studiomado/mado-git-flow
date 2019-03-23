@@ -35,7 +35,6 @@ fi
 prev=""
 consoleTaskId="0"
 releaseMajor="0"
-pullRequest="0"
 
 if [[ "$1" == "init" ]]; then
     git flow init -d
@@ -81,7 +80,7 @@ fi
 
 # menage commit
 if [[ "$1" == "commit" ]]; then
-    gim-commit $(get-actual-branch-type) $(get-actual-branch-name)
+    gim-commit "$(get-actual-branch-type)" "$(get-actual-branch-name)"
 fi
 
 # menage delete remote branch
