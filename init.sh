@@ -1,4 +1,4 @@
-       #!/bin/bash
+#!/bin/bash
 isMac=0
 if [[ "$OSTYPE" == "darwin"* ]]; then
     isMac=1
@@ -29,10 +29,10 @@ if [[ $(git flow version) == "" ]]; then
         sudo apt-get install git-flow
     fi
 fi
-chmod +x gim.sh
+chmod +x gim
 if [[ "$isMac" == "1" ]]; then
-        cp gim.sh /usr/local/bin/gim
-    else
-        sudo cp gim.sh /usr/local/bin/gim
-    fi
+    cp gim /usr/local/bin/gim
+else
+    sudo cp gim /usr/local/bin/gim
+fi
 echo "installazione terminata!"
