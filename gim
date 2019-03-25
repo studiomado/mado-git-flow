@@ -17,24 +17,9 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
     usage
 fi
 
-major=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f1)
-major="${major//v/}"
-minor=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f2)
-patch=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f3)
-
-if [[ -z "$major" ]]; then
-    major=1
-fi
-if [[ -z "$minor" ]]; then
-    minor=0
-fi
-if [[ -z "$patch" ]]; then
-    patch=0
-fi
-
 prev=""
 consoleTaskId="0"
-releaseMajor="0"
+nextRevision="minor"
 
 if [[ "$1" == "init" ]]; then
     git flow init -d
@@ -46,49 +31,34 @@ do
         consoleTaskId="$var"
     fi
     if [[ "$var" == "-m" ]]; then
-        releaseMajor="1"
+        nextRevision="major"
     fi
     prev="$var"
 done
-# create feature or hotfix branch
-if [[ "$1" == "feature" ]] || [[ "$1" == "bugfix" ]]; then
-    newBranch=$(gim-generate-new-branch-name "$consoleTaskId")
-    git flow "$1" start "$newBranch"
-fi
 
-if [[ "$1" == "hotfix" ]]
-then
-    git flow "$1" start "v$major.$minor.$((patch + 1))"
-fi
+case "$1" in
+    feature | bugfix)
+        git flow "$1" start "$(gim-generate-new-branch-name ${consoleTaskId})"
+        ;;
+    hotfix)
+        git flow "$1" start "$(gim-get-next-version patch)"
+        ;;
+    release)
+        git flow release start "$(gim-get-next-version ${nextRevision})"
+        ;;
+    finish | publish)
+        git flow "$(gim-get-actual-branch-type)" "$1" "$(gim-get-actual-branch-name)"
+        ;;
+    commit)
+        gim-commit "$(gim-get-actual-branch-type)" "$(gim-get-actual-branch-name)"
+        ;;
+    deleteRemoteBranch)
+        gim-delete-remote-branch
+        ;;
+    deleteLocalBranch)
+        gim-delete-local-branch
+        ;;
+    *)
+        git flow "$@"
+esac
 
-if [[ "$1" == "release" ]]
-then
-    releaseName="v$major.$((minor +1))".0
-    if [[ "$releaseMajor" == "1" ]]; then
-        releaseName="v$((major + 1))".0.0
-    fi
-    git flow release start "$releaseName"
-fi
-
-if [[ "$1" == "finish" ]] || [[ "$1" == "publish" ]]; then
-    git flow "$(get-actual-branch-type)" "$1" "$(get-actual-branch-name)"
-fi
-
-if [[ "$1" == "delete" ]]; then
-    git flow delete
-fi
-
-# menage commit
-if [[ "$1" == "commit" ]]; then
-    gim-commit "$(get-actual-branch-type)" "$(get-actual-branch-name)"
-fi
-
-# menage delete remote branch
-if [[ "$1" == "deleteRemoteBranch" ]]; then
-    gim-delete-remote-branch
-fi
-
-# menage delete local branch
-if [[ "$1" == "deleteLocalBranch" ]]; then
-    delete-local-branch
-fi

@@ -4,9 +4,11 @@ datarootdir=$(prefix)/share
 SCRIPT_FILES=gim-commit
 SCRIPT_FILES+=gim-delete-local-branch
 SCRIPT_FILES+=gim-delete-remote-branch
-SCRIPT_FILES+=gim-genetate-new-branch-name
+SCRIPT_FILES+=gim-generate-new-branch-name
+SCRIPT_FILES+=gim-get-actual-branch-type
 SCRIPT_FILES+=gim-get-actual-branch
-SCRIPT_FILES+=gim-get-branch-name
+SCRIPT_FILES+=gim-get-actual-branch-name
+SCRIPT_FILES+=gim-get-next-version
 
 init:
 	chmod +x ./init.sh
