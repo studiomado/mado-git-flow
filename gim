@@ -18,7 +18,7 @@ if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
 fi
 
 prev=""
-consoleTaskId="0"
+consoleTaskId=""
 nextRevision="minor"
 
 if [[ "$1" == "init" ]]; then
@@ -27,14 +27,18 @@ fi
 
 for var in "$@"
 do
+    if [[ "$prev" == "-t" ]]; then
+        consoleTaskId="$var"
+    fi
     if [[ "$var" == "-m" ]]; then
         nextRevision="major"
     fi
+    prev="$var"
 done
 
 case "$1" in
     feature | bugfix)
-        git flow "$1" start "$(gim-generate-new-branch-name ${consoleTaskId})"
+        gim-feature-and-bugfix "$1" "$consoleTaskId"
         ;;
     hotfix)
         git flow "$1" start "$(gim-get-next-version patch)"

@@ -1,15 +1,16 @@
 #!/bin/bash
-taskId="$1"
-if [[ -z "$taskId" ]]; then
+
+taskId="$2"
+if [[ "$taskId" == '' ]]; then
     printf "task id: "
     read -r taskId
-    printf "nome $1: "
-    read -r name
-    newName="${name// /-}"
 fi
+printf "nome: "
+read -r name
+newName="${name// /-}"
 if [[ "$taskId" != "" ]]; then
     branchName="#$taskId-$newName"
 else
     branchName="$newName"
 fi
-echo "$branchName"
+git flow "$1" start "$branchName"
