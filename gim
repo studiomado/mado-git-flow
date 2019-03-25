@@ -27,13 +27,9 @@ fi
 
 for var in "$@"
 do
-    if [[ "$prev" == "-t" ]]; then
-        consoleTaskId="$var"
-    fi
     if [[ "$var" == "-m" ]]; then
         nextRevision="major"
     fi
-    prev="$var"
 done
 
 case "$1" in
