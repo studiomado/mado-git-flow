@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage() {
+    echo "        feature: crea un branch feature"
+    echo "        hotfix: crea un branch di hotfix"
+    echo "        bugfix: crea un branch di bugfix"
+    echo "        release: crea un branch di release"
+    echo "        commit: committa tutte le modifiche"
+    echo "        finish: mergia ed elimina il branch"
+    echo "        published: pusha il branch in remoto"
+    echo "        delete: elimina branch corrente"
+    echo "        deleteRemoteBranch: tool pulizia branch remoti"
+    echo "        deleteLocalBranch: tool pulizia branch locali"
+    exit
+}
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
+    usage
+fi
+
+prev=""
+consoleTaskId=""
+nextRevision="minor"
+
+if [[ "$1" == "init" ]]; then
+    git flow init -d
+fi
+
+for var in "$@"
+do
+    if [[ "$prev" == "-t" ]]; then
+        consoleTaskId="$var"
+    fi
+    if [[ "$var" == "-m" ]]; then
+        nextRevision="major"
+    fi
+    prev="$var"
+done
+
+case "$1" in
+    feature | bugfix)
+        gim-feature-and-bugfix "$1" "$consoleTaskId"
+        ;;
+    hotfix)
+        git flow "$1" start "$(gim-get-next-version patch)"
+        ;;
+    release)
+        git flow release start "$(gim-get-next-version ${nextRevision})"
+        ;;
+    finish | publish)
+        git flow "$(gim-get-actual-branch-type)" "$1" "$(gim-get-actual-branch-name)"
+        ;;
+    commit)
+        gim-commit "$(gim-get-actual-branch-type)" "$(gim-get-actual-branch-name)"
+        ;;
+    deleteRemoteBranch)
+        gim-delete-remote-branch
+        ;;
+    deleteLocalBranch)
+        gim-delete-local-branch
+        ;;
+    *)
+        git flow "$@"
+esac
+

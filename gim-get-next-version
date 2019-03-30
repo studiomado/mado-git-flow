@@ -1,0 +1,27 @@
+#!/bin/bash
+major=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f1)
+major="${major//v/}"
+minor=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f2)
+patch=$(git describe --tags "git rev-list --tags --max-count=1" | cut -d '.' -f3)
+
+if [[ -z "$major" ]]; then
+    major=1
+fi
+if [[ -z "$minor" ]]; then
+    minor=0
+fi
+if [[ -z "$patch" ]]; then
+    patch=0
+fi
+
+case "$1" in
+    major)
+        echo "v$((major +1)).0.0"
+    ;;
+    minor)
+        echo "v$major.$((minor + 1)).0"
+    ;;
+    patch)
+        echo "v$major.$minor.$((patch + 1))"
+    ;;
+esac

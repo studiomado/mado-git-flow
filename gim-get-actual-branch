@@ -1,0 +1,3 @@
+#!/bin/bash
+actualBranch=$(git branch | grep \* | cut -d ' ' -f2)
+echo "$actualBranch"
