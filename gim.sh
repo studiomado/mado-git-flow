@@ -1,16 +1,18 @@
 #!/bin/bash
 
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]  || [[ -z "$1" ]]; then
-    echo "        feature: crea un branch feature"
-    echo "        hotfix: crea un branch di hotfix"
-    echo "        bugfix: crea un branch di bugfix"
-    echo "        release: crea un branch di release"
-    echo "        commit: committa tutte le modifiche"
-    echo "        finish: mergia ed elimina il branch"
-    echo "        published: pusha il branch in remoto"
-    echo "        delete: elimina branch corrente"
-    echo "        deleteRemoteBranch: tool pulizia branch remoti"
-    echo "        deleteLocalBranch: tool pulizia branch locali"
+    echo
+    echo -e "\t\033[32m""feature:\033[33m"" crea un branch feature\033[0m"
+    echo -e "\t\033[32m""hotfix:\033[33m"" crea un branch di hotfix\033[0m"
+    echo -e "\t\033[32m""bugfix:\033[33m"" crea un branch di bugfix\033[0m"
+    echo -e "\t\033[32m""release:\033[33m"" crea un branch di release\033[0m"
+    echo -e "\t\033[32m""commit:\033[33m"" committa tutte le modifiche\033[0m"
+    echo -e "\t\033[32m""finish:\033[33m"" mergia ed elimina il branch\033[0m"
+    echo -e "\t\033[32m""published:\033[33m"" pusha il branch in remoto\033[0m"
+    echo -e "\t\033[32m""delete:\033[33m"" elimina branch corrente\033[0m"
+    echo -e "\t\033[32m""deleteRemoteBranch:\033[33m"" tool pulizia branch remoti\033[0m"
+    echo -e "\t\033[32m""deleteLocalBranch:\033[33m"" tool pulizia branch locali\033[0m"
+    echo
     exit
 fi
 actualBranch=$(git branch | grep \* | cut -d ' ' -f2)
